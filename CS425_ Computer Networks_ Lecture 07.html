@@ -1,0 +1,367 @@
+
+<!-- saved from url=(0057)https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec07.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>
+CS425: Computer Networks: Lecture 07
+</title>
+</head>
+<body text="BLACK" bgcolor="#ffffff"><a name="top"></a>
+
+<center>
+<h1>Computer Networks (CS425)</h1>
+<h3>Instructor: Dr. Dheeraj Sanghi</h3>
+</center>
+
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec06.html">Prev</a>|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec08.html">Next</a>|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/index.html">Index</a>
+
+<hr color="black">
+<center><h2>IEEE 802.5: Token Ring Network</h2></center><p>
+
+</p><ul>
+<li>Token Ring is formed by the nodes connected in ring format as shown in the diagram below. The principle used  in the token ring network is that a token is circulating in the ring and whichever node grabs that token will have right to transmit the data.  
+</li><li>Whenever a station wants to transmit a frame it inverts a single bit of the 3-byte token which instantaneously changes it into a normal data packet. Because there is only one token, there can atmost be one transmission at a time.  
+</li><li>Since the token rotates in the ring  it is guarenteed that every node gets the token with in some specified time. So there is an upper bound on the time of waiting to grab the token so that starvation is avoided. 
+</li><li>There is also an upper limit of 250 on the number of nodes in the network. 
+</li><li>To distinguish the normal data packets from token (control packet) a special sequence is assigned to the token packet. When any node gets the token it first sends the data it wants to send, then recirculates the token.
+</li></ul>
+
+<br>
+<center>
+<img src="./CS425_ Computer Networks_ Lecture 07_files/ring.gif">
+</center>
+
+<p>
+If a node transmits the token and nobody wants to send the data the token comes back to the sender. If the first bit of the token reaches the sender before the transmission of the last bit, then error situation araises. So to avoid this we should have:
+</p><p>
+</p><center>
+<b>
+propogation delay + transmission of n-bits (1-bit delay in each node ) &gt; transmission of the token time
+</b>
+</center>
+<br>
+A station may hold the token for the token-holding time.  which is 10 ms unless the installation sets a different value. If there is enough time left after the first frame has been transmitted to send more frames, then these frames may be sent as well. After all pending frames have been transmitted  or the transmission frame would exceed the token-holding time, the station regenerates the 3-byte token frame and puts it back on the ring.
+<p>
+</p><h3>Modes of Operation</h3>
+<ol>
+<li><b>Listen Mode: </b>In this mode the node listens to the data and  transmits the data to the next node. In this  mode there is a one-bit delay associated with the transmission.
+<br>
+<center>
+<img src="./CS425_ Computer Networks_ Lecture 07_files/listen.jpg">
+</center>
+<br>
+</li><li><b>Transmit Mode: </b>In this mode the node just discards the any data and puts the data onto the network.
+<br>
+<center>
+<img src="./CS425_ Computer Networks_ Lecture 07_files/transmit.jpg">
+</center>
+<br>
+</li><li><b>By-pass Mode: </b>In this mode  reached when the node is down. Any data is just bypassed. There is no one-bit delay in this mode.
+<br>
+<center>
+<img src="./CS425_ Computer Networks_ Lecture 07_files/bypass.jpg">
+</center>
+<br>
+</li></ol>
+
+<h3>Token Ring Using Ring Concentrator</h3>
+<br>
+<center>
+<img src="./CS425_ Computer Networks_ Lecture 07_files/trhubani.gif">
+</center>
+<br>
+One problem with a ring network is that if the cable breaks somewhere, the ring dies. This problem is elegantly addressed by using a ring concentrator. A Token Ring concentrator simply changes the topology from a physical ring to a star wired ring. But the network still remains a ring logically. Physically, each station is connected to the ring concentrator (wire center) by a cable containing at least two twisted pairs, one for data to the station and one for data from the station. The Token still circulates around the network and is still controlled in the same manner, however, using a hub or a switch greatly improves reliability because the hub can automatically bypass any ports that are disconnected or have a cabling fault. This is done by having bypass relays inside the concentrator that are energized by current from the stations. If the ring breaks or station goes down, loss of the drive current will release the relay and bypass the station. The ring can then continue operation with the bad segment bypassed.
+
+<h3>Who should remove the packet from the ring ?</h3>
+There are 3 possibilities-<p></p> 
+ 
+  <ol>
+    <li><b>The source itself removes the packet after one full round in the ring</b>.
+    </li><li><b>The destination removes it after accepting it</b>: This has two
+      potential problems. Firstly, the solution won't work for broadcast or
+      multicast, and secondly, there would be no way to acknowledge the sender
+      about the receipt of the packet.
+    </li><li><b>Have a specialized node only to discard packets</b>: This is a bad
+      solution as the specialized node would know that the packet has been
+      received by the destination only when it receives the packet the second
+      time and by that time the packet may have actually made about one and half
+      (or almost two in the worst case) rounds in the ring.
+  
+  </li></ol>
+<p>
+Thus the first solution is adopted with the source itself removing the packet
+from the ring after a full one round. With this scheme, broadcasting and
+multicasting can be handled as well as the destination can acknowledge the
+source about the receipt of the packet (or can tell the source about some
+error).
+
+</p><h3>Token Format</h3>
+
+<p>The token is the shortest frame transmitted (24 bit)<br>MSB (Most Significant 
+Bit) is always transmitted first - as opposed to Ethernet</p>
+<blockquote>
+<table border="4" color="#FF0000">
+  <tbody>
+  <tr>
+    <td>SD</td>
+    <td>AC</td>
+    <td>ED</td></tr></tbody></table>   
+<p><b>SD = Starting Delimiter (1 Octet)<br>AC = Access Control (1 Octet)<br>ED = 
+Ending Delimiter (1 Octet)</b></p>
+<h4>Starting Delimiter Format:</h4>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>J</td>
+    <td>K</td>
+    <td>O</td>
+    <td>J</td>
+    <td>K</td>
+    <td>O</td>
+    <td>O</td>
+    <td>O</td></tr></tbody></table>
+<p><b>J = Code Violation <br>K = Code Violation</b> </p>
+<h4>Access Control Format: </h4>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>P</td>
+    <td>P</td>
+    <td>P</td>
+    <td>T</td>
+    <td>M</td>
+    <td>R</td>
+    <td>R</td>
+    <td>R</td></tr></tbody></table>
+<p><b>T=Token</b><br>T = 0&nbsp; for Token <br>T = 1&nbsp; for Frame<br>When a station with a Frame to 
+transmit detects a token which has a priority equal to or less than the Frame to 
+be transmitted, it may change the token to a start-of-frame sequence and 
+transmit the Frame<br><br><b>P = Priority<br></b>Priority Bits indicate 
+tokens priority, and therefore, which stations are allowed to use it. Station can 
+transmit if its priority as at least as high as that of the token. <br><br><b>M 
+= Monitor <br></b>The monitor bit is used to prevent a token whose priority is 
+greater than 0 or any frame from continuously circulating on the ring. If an 
+active monitor detects a frame or a high priority token with the monitor bit 
+equal to 1, the frame or token is aborted. This bit shall be transmitted as 0 in 
+all frame and tokens. The active monitor inspects and modifies this bit. All 
+other stations shall repeat this bit as received.</p>
+<p><b>R = Reserved bits <br></b>The reserved bits allow station with high 
+priority Frames to request that the next token be issued at the requested priority.</p>
+
+<h4>Ending Delimiter Format:</h4>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>J</td>
+    <td>K</td>
+    <td>1</td>
+    <td>J</td>
+    <td>K</td>
+    <td>1</td>
+    <td>1</td>
+    <td>E</td></tr></tbody></table>
+<p><br><b>J = Code Violation <br>K = Code Violation <br>I = Intermediate Frame Bit
+<br>E = Error Detected Bit</b><br></p>
+</blockquote>
+
+<h3>Frame Format:</h3> 
+<p>MSB (Most Significant Bit) is always transmitted first - as opposed to 
+Ethernet</p>
+<blockquote>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>SD</td>
+    <td>AC</td>
+    <td>FC</td>
+    <td>DA</td>
+    <td>SA</td>
+    <td>DATA</td>
+    <td>CRC</td>
+    <td>ED</td>
+    <td>FS</td></tr></tbody></table>
+<p><b>SD=Starting Delimiter(1 octet)<br>
+AC=Access Control(1 octet)<br>
+    FC = Frame Control (1 Octet)<br>DA = Destination Address (2 or 6 
+Octets)<br>SA = Source Address (2 or 6 Octets)<br>DATA = Information 0 or more 
+octets up to 4027 <br>CRC = Checksum(4 Octets)<br>ED = Ending Delimiter 
+(1 Octet)<br>FS=Frame Status</b></p>
+
+<h4>Starting Delimiter Format:</h4>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>J</td>
+    <td>K</td>
+    <td>0</td>
+    <td>J</td>
+    <td>K</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td></tr></tbody></table>
+<p><b>J = Code Violation<br>K = Code Violation</b></p>
+
+<h4>Access Control Format:</h4>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>P</td>
+    <td>P</td>
+    <td>P</td>
+    <td>T</td>
+    <td>M</td>
+    <td>R</td>
+    <td>R</td>
+    <td>R</td></tr></tbody></table>
+<p><b>T=Token</b></p>
+<p>T = “0” for Token,<br>T = “1” for Frame.</p>
+<p>When a station with a Frame to transmit detects a token which has a priority 
+equal to or less than the Frame to be transmitted, it may change the token to a 
+start-of-frame sequence and transmit the Frame.</p>
+<p><b>P = Priority<br></b>Bits Priority Bits indicate tokens priority, and 
+therefore, which stations are allowed to use it. Station can transmit if its 
+priority as at least as high as that of the token.</p>
+<p><b>M = Monitor<br></b>The monitor bit is used to prevent a token whose 
+priority is greater than 0 or any frame from continuously circulating on the 
+ring. if an active monitor detects a frame or a high priority token with the 
+monitor bit equal to 1, the frame or token is aborted. This bit shall be 
+transmitted as 0 in all frame and tokens. The active monitor inspects and 
+modifies this bit. All other stations shall repeat this bit as received.</p>
+<p><b>R = Reserved bits</b> the reserved bits allow station with high priority 
+Frames to request that the next token be issued at the requested priority </p>
+
+<h4>Frame Control Format:</h4>
+<table border="3">
+<tbody>
+<tr>
+<td>F</td>
+<td>F</td>
+<td>CONTROL BITS (6 BITS)</td>
+</tr></tbody></table>
+<p><b>FF= Type of Packet-Regular data packet or MAC layer packet<br>
+Control Bits= Used if the packet is for MAC layer protocol itself</b>
+
+</p><h4>Source and Destination Address Format:</h4>
+<p>The addresses can be of 2 bytes (local address) or 6 bytes (global address).</p>
+
+<p><b>local address format:</b></p>
+<table border="3">
+<tbody>
+<tr>
+<td>I/G (1 BIT)</td>
+<td>NODE ADDRESS (15 BITS)</td>
+</tr></tbody></table>
+
+<p>alternatively<br>
+
+<table border="3">
+<tbody>
+<tr>
+<td>I/G (1 BIT)</td>
+<td>RING ADDRESS (7 BITS)</td>
+<td>NODE ADDRESS (8 BITS)</td>
+</tr></tbody></table>
+</p><p>The first bit specifies individual or group address.</p>
+<p><b>universal (global) address format:</b></p>
+<table border="3">
+<tbody>
+<tr>
+<td>I/G (1 BIT)</td>
+<td>L/U (1 BIT)</td>
+<td>RING ADDRESS (14 BITS)</td>
+<td>NODE ADDRESS (32 BITS)</td>
+</tr></tbody></table>
+<p>The first bit specifies individual or group address.<br>The second bit specifies
+local or global (universal) address.</p>
+
+<p><b>local group addresses (16 bits):</b></p>
+<table border="3">
+<tbody>
+<tr>
+<td>I/G (1 BIT)</td>
+<td>T/B(1 BIT)</td>
+<td>GROUP ADDRESS (14 BITS)</td>
+</tr></tbody></table>
+
+<p>The first bit specifies an individual or group address.<br>
+The second bit specifies traditional or bit signature group address.
+
+</p><p><b>Traditional Group Address: </b>2Exp14 groups can be defined.<br>
+<b>Bit Signature Group Address: </b>14 grtoups are defined. A host can be a
+member of none or any number of them. For multicasting, those group bits are set
+to which the packet should go. For broadcasting, all 14 bits are set. A host
+receives a packet only if it is a member of a group whose corresponding bit is
+set to 1.
+
+</p><p><b>universal group addresses (16 bits):</b></p>
+<table border="3">
+<tbody>
+<tr>
+<td>I/G (1 BIT)</td>
+<td>RING NUMBER</td>
+<td>T/B (1 BIT)</td>
+<td>GROUP ADDRESS (14 BITS)</td>
+</tr></tbody></table>
+
+<p>The description is similar to as above.
+
+</p><h4>Data Format:</h4>
+<p>No upper limit on amount of data as such, but it is limited by the token
+holding time.
+
+</p><h4>Checksum:</h4>
+<p>The source computes and sets this value. Destination too calculates this
+value. If the two are different, it indicates an error, otherwise the data may
+be correct.
+
+</p><h4>Frame Status:</h4>
+<p>It contains the A and C bits.</p><p><b>A bit set to 1: destination recognized the
+packet.<br>C bit set to 1: destination accepted the packet.</b></p><p>This
+arrangement provides an automatic acknowledgement for each frame. The A and C
+bits are present twice in the Frame Status to increase reliability in as much as
+they are not covered by the checksum.<b>
+
+</b></p><h4><b>Ending Delimiter Format:</b></h4><b>
+<table border="3">
+  <tbody>
+  <tr>
+    <td>J</td>
+    <td>K</td>
+    <td>1</td>
+    <td>J</td>
+    <td>K</td>
+    <td>1</td>
+    <td>I</td>
+    <td>E</td></tr></tbody></table>
+</b><p><b><b>J = Code Violation<br>K = Code Violation<br>I = Intermediate Frame Bit<br></b>
+
+</b>
+
+If
+this bit is set to 1, it indicates that this packet is an intermediate part of a
+bigger packet, the last packet would have this bit set to 0.<b>
+
+<br><b> E = Error Detected Bit<br></b>
+
+</b>
+
+This bit is set if any interface detects an error.</p>
+
+</blockquote>
+<p>This concludes our description of the token ring frame format.</p>
+
+
+<hr color="BLACK">
+<h3>Image References:</h3>
+<ul>
+<li>http://www.webopedia.com/FIG/RING.gif
+</li><li>http://www.datacottage.com/nch/anigifs/trhubani.gif
+</li></ul>
+<hr color="BLACK">
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec07.html#top">back to top</a><br>
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec06.html">Prev</a>|&nbsp;<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec08.html">Next </a>|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/index.html">Index</a>
+<p></p>
+
+</body></html>

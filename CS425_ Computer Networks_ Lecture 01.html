@@ -1,0 +1,169 @@
+
+<!-- saved from url=(0057)https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec01.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>
+CS425: Computer Networks: Lecture 01
+</title>
+</head>
+<body text="BLACK" bgcolor="#ffffff"><a name="top"></a>
+
+<center>
+<h1>Computer Networks (CS425)</h1>
+<h3>Instructor: Dr. Dheeraj Sanghi</h3>
+</center>
+
+Prev&nbsp;|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec02.html">Next</a>&nbsp;|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/index.html">Index</a>&nbsp;
+
+<hr color="black">
+
+<b><u><center><h2>ISO-OSI 7-Layer Network Architecture</h2></center></u></b>
+<p>This lecture introduces the ISO-OSI layered architecture of Networks. According to the ISO standards, networks have 
+been divided into 7 layers depending on the complexity of the fucntionality each of these layers provide. The detailed 
+description of each of these layers is given in the notes below. We will first list the layers as defined by the 
+standard in the increasing order of function complexity:</p>
+
+<ol>
+<li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec01.html#physical">Physical Layer</a>
+</li><li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec01.html#datalink">Data Link Layer</a>
+</li><li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec01.html#network">Network Layer</a>
+</li><li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec01.html#transport">Transport Layer</a>
+</li><li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec02.html#session">Session Layer</a>
+</li><li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec02.html#presentation">Presentation Layer</a>
+</li><li><a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec02.html#application">Application Layer</a>
+</li></ol>
+
+
+<h3><a name="physical">Physical Layer</a></h3>
+
+This layer is the lowest layer in the OSI model. It helps in the transmission of data between two machines that are
+communicating through a physical medium, which can be optical fibres,copper wire or wireless etc. The following are the 
+main functions of the physical layer:
+<ol>
+<li><b>Hardware Specification:</b> The details of the physical cables, network interface cards, wireless radios, etc are
+a part of this layer.
+<center><br>
+<table>
+<tbody><tr><td>
+<b>Coaxial Cable</b></td><td>
+<b>Hybrid Cable</b></td><td>
+<b>Wireless Card</b></td><td>
+<b>Network Card</b></td></tr><tr><td>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/coaxla.gif" height="100" width="150"></td><td>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/hybrids.jpg" height="100" width="150"></td><td>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/wireless.jpg" height="100" width="150"></td><td>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/card.jpg" height="100" width="150"></td></tr>
+</tbody></table>
+</center><br>
+</li><li><b>Encoding and Signalling:</b> How are the bits encoded in the medium is also decided by this layer. For example, 
+on the coppar wire medium, we can use differnet voltage levels for a certain time interval to represent '0' and '1'. 
+We may use +5mV for 1nsec to represent '1' and -5mV for 1nsec to represent '0'. All the issues of modulation is dealt 
+with in this layer. eg, we may use Binary phase shift keying for the representation of '1' and '0' rather than using
+different volatage levels if we have to transfer in RF waves. 
+<center><br>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/bpsk.gif"><br>
+<b>Binary Phase Shift Keying</b>
+</center><br>
+</li><li><b>Data Transmission and Reception:</b> The transfer of each bit of data is the responsibility of this layer. This 
+layer assures the transmissoin of each bit with a <i>high probability</i>. The transmission of the bits is not 
+completely reliable as their is no error correction in this layer.
+</li><li><b>Topology and Network Design:</b> The network design is the integral part of the physical layer. Which part of the 
+network is the router going to be placed, where the switches will be used, where we will put the hubs, how many machines
+is each switch going to handle, what server is going to be placed where, and many such concerns are to be taken care
+of by the physical layer. The variosu kinds of netopologies that we decide to use may be ring, bus, star or a hybrid of 
+these topologies depending on our requirements. 
+<center><br>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/net_topo.gif"><br>
+</center><br>
+</li></ol>
+
+
+
+<h3><a name="datalink"> Data Link Layer</a></h3>	
+This layer provides reliable transmission of a packet by using the services of the physical layer which transmits bits over the medium in an unreliable fashion. This layer is concerned with :
+<ol>
+<li>Framing : Breaking input data into frames (typically a few hundred bytes) and caring about the frame boundaries and the size of each frame.
+</li><li>Acknowledgment : Sent by the receiving end to inform the source that the frame was received without any error.
+</li><li>Sequence Numbering : To acknowledge which frame was received.
+</li><li>Error Detection : The frames may be damaged, lost or duplicated leading to errors.The error control is on <b>link to link</b> basis.
+</li><li>Retransmission : The packet is retransmitted if the source fails to receive acknowledgment.
+</li><li>Flow Control : Necessary for a fast transmitter to keep pace with a slow receiver.
+</li></ol>
+<center><br>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/data_link_layer.gif"><br>
+<b>Data Link Layer</b>
+</center><br>
+
+<h3><a name="network">Network Layer</a></h3>
+Its basic functions are routing and congestion control.<br>
+<b>Routing:</b> This deals with determining how packets will be routed (transferred) from source to destination. It can be of three types : 
+<ul>
+<li>Static : Routes are based on static tables that are "wired into" the network and are rarely changed.
+</li><li>Dynamic : All packets of one application can follow different routes depending upon the topology of the network, the shortest path and the current network load.
+</li><li>Semi-Dynamic : A route is chosen at the start of each conversation and then all the packets of the application follow the same route.
+</li></ul>
+<center><br>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/routing.jpg"><br>
+<b>Routing</b>
+</center><br>
+The services provided by the network can be of two types :
+<ul>
+<li><b>Connection less service:</b> Each packet of an application is treated as an independent entity. On each packet of the application the destination address is provided and the packet is routed.
+</li><li><b>Connection oriented service:</b> Here, first a connection is established and then all packets of the application follow the same route. To understand the above concept, we can also draw an analogy from the real life. Connection oriented service is modeled after the telephone system. All voice packets go on the same path after the connection is established till the connection is hung up. It acts like a tube ; the sender pushes the objects in at one end and the receiver takes them out in the same order at the other end. Connection less service is modeled after the postal system. Each letter carries the destination address and is routed independent of all the others. Here, it is possible that the letter sent first is delayed so that the second letter reaches the destination before the first letter. 
+</li></ul>
+<b>Congestion Control:</b> A router can be connected to 4-5 networks. If all the networks send packet at the same time with maximum rate possible then the router may not be able to handle all the packets and may drop some/all packets. In this context the dropping of the packets should be minimized and the source whose packet was dropped should be informed. The control of such congestion is also a function of the network layer. Other issues related with this layer are transmitting time, delays, jittering.
+<br><br>
+<b>Internetworking:</b>  Internetworks are multiple networks that are connected in such a way that they act as one large network, connecting multiple office or department networks. Internetworks are connected by networking hardware such as routers, switches, and bridges.Internetworking is a solution born of three networking problems: isolated LANs, duplication of resources, and the lack of a centralized network management system. With connected LANs, companies no longer have to duplicate programs or resources on each network. This in turn gives way to managing the network from one central location instead of trying to manage each separate LAN. We should be able to transmit any packet from one network to any other network even if they follow different protocols or use different addressing modes. 
+<center><br>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/internetworking.gif"><br>
+<b>Inter-Networking</b>
+</center><br>
+Network Layer <b>does not</b> guarantee that the packet will reach its intended destination. There are no reliability 
+guarantees.
+
+<h3><a name="transport">Transport Layer</a></h3>
+Its functions are :
+<ul>
+<li><b>Multiplexing / Demultiplexing :</b> Normally the transport layer will create distinct network connection for each transport connection required by the session layer. The transport layer may either create multiple network connections (to improve throughput) or it may multiplex several transport connections onto the same network connection (because creating and maintaining networks may be expensive). In the latter case, demultiplexing will be required at the receiving end. A point to note here is that communication is always carried out between two processes and not between two machines. This is also known as process-to-process communication.
+</li><li><b>Fragmentation and Re-assembly :</b> The data accepted by the transport layer from the session layer is split up into smaller units (fragmentation) if needed and then passed to the network layer. Correspondingly, the data provided by the network layer to the transport layer on the receiving side is re-assembled.
+<center><br>
+<table>
+<tbody><tr><td>
+<b>Fragmentation</b></td><td>
+<b>Reassembly</b></td></tr><tr><td>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/frag.gif" height="300" width="400"></td><td>
+<img src="./CS425_ Computer Networks_ Lecture 01_files/reass.gif" height="300" width="400"></td></tr>
+</tbody></table>
+</center><br>
+</li><li><b>Types of service :</b> The transport layer also decides the type of service that should be provided to the session layer. The service may be perfectly reliable, or may be reliable within certain tolerances or may not be reliable at all. The message may or may not be received in the order in which it was sent. The decision regarding the type of service to be provided is taken at the time when the connection is established.
+</li><li><b>Error Control :</b> If reliable service is provided  then error detection and error recovery operations are also performed. It provides error control mechanism on <b>end to end</b> basis.
+</li><li><b>Flow Control :</b> A fast host cannot keep pace with a slow one. Hence, this is a mechanism to regulate the flow of information.
+</li><li><b>Connection Establishment / Release :</b> The transport layer also establishes and releases the connection across the network. This requires some sort of naming mechanism so that a process on one machine can indicate with whom it wants to communicate.
+</li></ul>
+<hr color="BLACK">
+<b>References of Images</b>
+<ul>
+<li>http://www.putergeek.com/.../ pci_combo_card_sm.jpg
+</li><li>http://blue.utb.edu/libertad/clipart/pi_wireless_pc_card_b.jpg
+</li><li>http://www.commscope.com/ images/hybrids.jpg hybrid cable
+</li><li>http://www.cba.nau.edu/facstaff/maris-j/SavedStuff/Images/net_topo.gif
+</li><li>http://www.ces.net/doc/2003/research/xl-unicast-routing.gif
+</li><li>http://www.infinitygroup.com/images/internetworking.gif
+</li><li>http://www.microway.com/.../ data_link_layer.gif 
+</li><li>http://searchnetworking.techtarget.com/WhatIs/images/coaxla.gif
+</li><li>http://www.df.lth.se/~pkj/thesis_report/img13.gif 
+</li><li>http://www.df.lth.se/~pkj/ thesis_report/img12.gif
+</li><li>http://www.ifla.org/VI/5/reports/rep3/rep3-2.gif
+</li><li>http://msp.gsfc.nasa.gov/tdrss/bpsk.gif 
+</li></ul>
+<hr color="BLACK">
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec01.html#top">back to top</a><br>
+
+Prev&nbsp;|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec02.html">Next</a>&nbsp;|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/index.html">Index</a>&nbsp;
+
+
+
+</body></html>

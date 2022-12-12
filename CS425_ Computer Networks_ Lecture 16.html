@@ -1,0 +1,279 @@
+
+<!-- saved from url=(0057)https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec16.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>
+CS425: Computer Networks: Lecture 16
+</title>
+</head>
+<body text="BLACK" bgcolor="#ffffff"><a name="top"></a>
+
+<center>
+<h1>Computer Networks (CS425)</h1>
+<h3>Instructor: Dr. Dheeraj Sanghi</h3>
+</center>
+
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec15.html">Prev</a>|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec17.html">Next</a>|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/index.html">Index</a>
+<hr color="black">
+<center><h2>Transport Layer Protocol- Implementation Issues</h2></center>
+In this class we discussed about the TCP from the implementation point of view and addressed various issues like 
+state diagram and other details which TCP Standard does not define but supported by commercial implementations.
+<h3>
+State Diagram</h3>
+The state diagram approach to view the TCP connection establishment and closing simplifies the design of TCP
+implementation. The idea is to represent the TCP connection state, which progresses from one state to other as
+various messages are exchanged. To simplify the matter, we considered two state diagrams, viz., for  TCP connection
+establishment and TCP connection closing.
+<br>
+Fig 1 shows the state diagram for the TCP connection establishment and associated table briefly explains each state.
+<center>
+<img src="./CS425_ Computer Networks_ Lecture 16_files/state1.gif"></center>
+<center>TCP Connection establishment</center> 
+The table gives brief description of each state of the above diagram. 
+<center><table border="" cols="2" width="100%" nosave="">
+<caption>State Description Table 1.</caption>
+
+<tbody><tr nosave="">
+<td width="25%" nosave="">Listen</td>
+
+<td>Represents the state when waiting for connection request from any remote
+host and port. This specifically applies to a Server.&nbsp;
+
+<p>From this state, the server can close the service or actively open a
+connection by sending SYN.&nbsp;
+<br>&nbsp;</p></td>
+</tr>
+
+<tr>
+<td>Syn-Sent</td>
+
+<td>Represents waiting for a matching for a connection request after having
+sent a connection request. This applies to both server and client side.
+Even though server is considered as the one with passive open, it can also
+send a SYN packet actively.&nbsp;
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>Syn_Rcvd</td>
+
+<td>Represents waiting for a confirmation connection request acknowledgment
+after having both received and sent connection request.&nbsp;
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>Estab</td>
+
+<td>Represents an open connection. Data transfer can take place from this
+point onwards.&nbsp;
+<br>&nbsp;</td>
+</tr>
+</tbody></table></center>
+&nbsp;
+ 
+
+<p>After the connection has been established, two end-points will exchange
+useful information and terminate the connection. Fig. 2 shows the state
+diagram for terminating an active connection.
+
+</p><center>&nbsp;</center>
+
+<center><img src="./CS425_ Computer Networks_ Lecture 16_files/state2.gif"></center>
+<center>&nbsp;Fig 2.&nbsp; TCP Connection termination</center>
+&nbsp;
+<br>&nbsp;
+<br>&nbsp;
+<center><table border="" cols="2" width="100%" nosave="">
+<caption>State Description Table 2</caption>
+
+<tbody><tr nosave="">
+<td width="25%" nosave="">FIN-WAIT-1</td>
+
+<td>Represents connection termination request from the remote TCP peer,
+or an acknowledgment of the connection termination request previously&nbsp;
+sent.&nbsp;
+
+<p>This state is entered when server issues close call.&nbsp;</p></td>
+</tr>
+
+<tr>
+<td>FIN-WAIT-2</td>
+
+<td>Represents waiting for a connection termination request from the remote
+TCP.&nbsp;
+<br>&nbsp;</td>
+
+</tr>
+
+<tr>
+<td>CLOSING</td>
+
+<td>Represents connection termination request acknowledgment from the remote
+TCP.&nbsp;
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>TIME_WAIT</td>
+
+<td>This represents waiting time enough for the packets to reach their
+destination. This waiting time is usually 4 min.&nbsp;
+
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>CLOSE_WAIT</td>
+
+<td>Represents a state when the server receives a FIN from the remote TCP
+, sends ACK and issues close call sending FIN&nbsp;
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>LAST_ACK</td>
+
+<td>Represents waiting for an ACK for the previously sent FIN-ACK to the
+remote TCP&nbsp;
+
+<br>&nbsp;</td>
+</tr>
+
+<tr>
+<td>CLOSE</td>
+
+<td>Represents a closed TCP connection having received all the ACKs&nbsp;
+<br>&nbsp;</td>
+</tr>
+</tbody></table></center>
+&nbsp;
+<h3>
+Other implementation details</h3>
+<h4>
+Quite Time</h4>
+It might happen that a host currently in communication crashes
+and reboots. At startup time, all the data structures and timers will be
+reset to an initial value. To make sure that earlier connection packets
+are gracefully rejected, the local host is not allowed to make any new
+connection for a small period at startup. This time will be set in accordance
+with reboot time of the operating system.
+
+<h4>
+Initial Sequence number :</h4>
+Initial sequence number used in the TCP communication will
+be&nbsp; initialized at boot time randomly, rather than to 0. This is to
+ensure that packets from old connection should not interfere with a new
+connection. So the recommended method is to
+
+<ul>
+<li>Initialize the ISN at boot time by a random number
+</li><li>For every 500 ms, increment ISN by 64K
+</li><li>With every SYN received, increment ISN by 64K
+</li></ul>
+
+
+<h4>
+Maximum Request backlog at server</h4>
+
+As we have seen in Unix Networking programming, <i>listen(sd,n),&nbsp;
+</i>sets a maximum to the number of requests to be obliged by the server
+at any time. So if there are already n requests for connection, and n+1
+request comes, two things can be done.
+<ul>
+<li>
+Drop the packet silently</li>
+
+<li>
+Ask the peer to send the request later.</li>
+</ul>
+The first option is recommended here because, the assumption is that this
+queue for request is a coincident and some time later, the server should
+be free to process the new request. Hence if we drop the packet, the client
+will go through the time-out and retransmission and server will be free
+to process it.
+
+<p>Also, Standard TCP does not define any strategy/option of knowing who
+requested the connection. Only Solaris 2.2 supports this option.
+</p><h4>
+Delayed Acknowledgment</h4>
+
+ TCP will piggyback the acknowledgment with its data. But if
+the peer does not have the any data to send at that moment, the acknowledgment
+should not be delayed too long. Hence a timer for 200 ms will be used.
+At every 200 ms, TCP will check for any acknowledgment to be sent and send
+them as individual packets.
+<h4>
+Small packets</h4>
+
+ TCP implementation discourages small packets. Especially if
+a previous relatively large packet has been sent and no acknowledgment
+has been received so far, then this small packet will be stored in the
+buffer until the situation improves.
+
+<p>But there are some applications for which delayed data is worse than
+bad data. For example, in <i>telnet, </i>each key stroke will be processed&nbsp;
+
+by the server and hence no delay should be introduced. As we have seen
+in Unix Networking programming, options for the socket can be set as NO_DELAY,
+so that small packets are not discouraged.
+</p><h4>
+ICMP Source Quench</h4>
+
+ We have seen in ICMP that ICMP Source Quench message will be
+send for the peer to slow down. Some implementations discard this message,
+but few set the <b>current window size</b> to 1.
+<br>But this is not a very good idea.
+<br>
+<h4>
+Retransmission Timeout</h4>
+
+ In some implementation (E.g.. Linux),
+ RTO = RTT + 4 * delay variance
+is used to instead of constant 2.
+
+<p>Also instead of calculating RTT(est) from the scratch, cache will be
+used to store the history from which new values are calculated as discussed
+in the previous classes.
+
+</p><p>Standard values for Maximum Segment Life (MSL)&nbsp; will be between
+0.5 to 2 minutes and
+Time wait state = f(MSL)
+
+
+</p><h4>
+Keep Alive Time</h4>
+
+Another important timer in TCP is keep alive timer. It is basically
+used by a TCP peer&nbsp; to check whether the other end is up or down.
+It periodically checks this connection. If&nbsp; the other end did not
+respond, then that connection will be closed.
+
+<h4>
+Persist Timer</h4>
+
+As we saw in TCP window management, when source sends one full
+window of packets, it will&nbsp; set its window size to 0 and expects an
+ACK from remote TCP&nbsp; to increase its window size. Suppose such an
+ACK has been sent and is lost. Hence source will have current window size
+= 0 and cannot send &amp; destination is expecting next byte. To avoid
+such a deadlock, a Persist Timer will be used. When this timer goes off,
+the source will send the last one byte again. So we hope that situation
+has improved and an ACK to increase the current window size will be received.
+<br>
+<hr>
+<b>References</b>
+<ul>
+<li>
+http://www.ssfnet.org/Exchange/tcp/tcpTutorialNotes.html
+</li></ul>
+
+<hr color="BLACK">
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec16.html#top">back to top</a><br>
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec15.html">Prev</a>|&nbsp;<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/lec17.html">Next </a>|
+<a href="https://www.cse.iitk.ac.in/users/dheeraj/cs425/index.html">Index</a>
+<p></p>
+
+
+</body></html>
